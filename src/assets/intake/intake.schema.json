@@ -1,0 +1,271 @@
+{
+  "title": "Legal Services Intake",
+  "version": "1.0.0",
+  "description": "Schema-driven intake for legal services. Derived from the Legal_Services_Intake_Questions_New.pdf.",
+  "sections": [
+    {
+      "id": "personal_details",
+      "title": "Personal Details",
+      "fields": [
+        { "id": "full_name", "label": "Full Name (as it should appear in our records)", "type": "text", "required": true },
+        { "id": "address", "label": "Current Address", "type": "textarea", "required": true },
+        { "id": "phone", "label": "Preferred Phone Number", "type": "tel", "required": true, "pattern": "^\\+?[0-9\\-()\\s]{7,}$" },
+        { "id": "email", "label": "Email Address", "type": "email", "required": true, "pattern": "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$" },
+        { "id": "country_of_origin", "label": "Country of Origin", "type": "text", "required": true },
+        {
+          "id": "status_in_canada",
+          "label": "Current Status in Canada",
+          "type": "select",
+          "required": true,
+          "options": ["Citizen", "Permanent Resident", "Refugee", "Work Permit", "Study Permit", "Visitor", "Other"]
+        }
+      ]
+    },
+    {
+      "id": "work_permit",
+      "title": "Work Permit",
+      "fields": [
+        {
+          "id": "has_work_permit",
+          "label": "Do you have a work permit?",
+          "type": "radio",
+          "required": true,
+          "options": ["Yes", "No"],
+          "reveals": { "Yes": ["work_permit_type"] }
+        },
+        { "id": "work_permit_type", "label": "Type of Permit", "type": "text", "required": false }
+      ]
+    },
+    {
+      "id": "drivers_licence",
+      "title": "Driver's Licence",
+      "fields": [
+        {
+          "id": "has_drivers_licence",
+          "label": "Do you have a valid driver's licence?",
+          "type": "radio",
+          "required": true,
+          "options": ["Yes", "No"],
+          "reveals": { "Yes": ["licence_issuing_authority", "licence_number", "licence_expiry"] }
+        },
+        { "id": "licence_issuing_authority", "label": "Issuing Authority", "type": "text", "required": false },
+        { "id": "licence_number", "label": "Licence Number", "type": "text", "required": false },
+        { "id": "licence_expiry", "label": "Expiry Date", "type": "date", "required": false, "minDate": "today" }
+      ]
+    },
+    {
+      "id": "health_card",
+      "title": "Health Card",
+      "fields": [
+        {
+          "id": "has_health_card",
+          "label": "Do you have a health card?",
+          "type": "radio",
+          "required": true,
+          "options": ["Yes", "No"],
+          "reveals": { "Yes": ["health_card_number"] }
+        },
+        { "id": "health_card_number", "label": "Health Card Number", "type": "text", "required": false }
+      ]
+    },
+    {
+      "id": "refugee_status",
+      "title": "Refugee Status",
+      "fields": [
+        {
+          "id": "applied_for_refugee_status",
+          "label": "Have you applied for refugee status?",
+          "type": "radio",
+          "required": true,
+          "options": ["Yes", "No"],
+          "reveals": { "Yes": ["refugee_story_upload", "refugee_supporting_proof"] }
+        },
+        {
+          "id": "refugee_story_upload",
+          "label": "Upload Refugee Story/Document",
+          "type": "file",
+          "required": false,
+          "accept": [".pdf", ".doc", ".docx", ".png", ".jpg", ".jpeg"],
+          "multiple": false,
+          "fileMeta": ["description", "date"]
+        },
+        {
+          "id": "refugee_supporting_proof",
+          "label": "Upload Supporting Proof",
+          "type": "file",
+          "required": false,
+          "accept": [".pdf", ".doc", ".docx", ".png", ".jpg", ".jpeg"],
+          "multiple": true,
+          "fileMeta": ["description", "date"]
+        }
+      ]
+    },
+    {
+      "id": "marital_status",
+      "title": "Marital Status",
+      "fields": [
+        {
+          "id": "marital_status",
+          "label": "Current Marital Status",
+          "type": "select",
+          "required": true,
+          "options": ["Single", "Married", "Common-law/Partnered", "Separated", "Divorced", "Widowed"],
+          "reveals": {
+            "Married": ["partner_name", "partner_contact"],
+            "Common-law/Partnered": ["partner_name", "partner_contact"]
+          }
+        },
+        { "id": "partner_name", "label": "Partner's Name", "type": "text", "required": false },
+        { "id": "partner_contact", "label": "Partner's Contact Information", "type": "textarea", "required": false }
+      ]
+    },
+    {
+      "id": "children",
+      "title": "Children",
+      "fields": [
+        {
+          "id": "has_children",
+          "label": "Do you have children?",
+          "type": "radio",
+          "required": true,
+          "options": ["Yes", "No"],
+          "reveals": { "Yes": ["children_list"] }
+        },
+        {
+          "id": "children_list",
+          "label": "Children (Name, Age, Where they currently live)",
+          "type": "repeater",
+          "required": false,
+          "itemFields": [
+            { "id": "child_name", "label": "Name", "type": "text", "required": true },
+            { "id": "child_age", "label": "Age", "type": "number", "required": true, "min": 0 },
+            { "id": "child_residency", "label": "Current Residency", "type": "text", "required": true }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "residency_history",
+      "title": "Residency History",
+      "fields": [
+        {
+          "id": "prior_residencies",
+          "label": "Countries lived in before coming to Canada (with periods)",
+          "type": "repeater",
+          "required": false,
+          "itemFields": [
+            { "id": "country", "label": "Country", "type": "text", "required": true },
+            { "id": "from_date", "label": "From (YYYY-MM)", "type": "month", "required": true },
+            { "id": "to_date", "label": "To (YYYY-MM)", "type": "month", "required": true }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "document_uploads",
+      "title": "Document Uploads",
+      "fields": [
+        {
+          "id": "general_uploads",
+          "label": "Upload any documents now (IDs, legal documents, supporting evidence)",
+          "type": "file",
+          "required": false,
+          "accept": [".pdf", ".doc", ".docx", ".png", ".jpg", ".jpeg"],
+          "multiple": true,
+          "fileMeta": ["description", "date"]
+        },
+        {
+          "id": "missing_documents",
+          "label": "Documents you are missing or need assistance to obtain",
+          "type": "textarea",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "service_needs",
+      "title": "Service Needs",
+      "fields": [
+        {
+          "id": "requested_services",
+          "label": "Which legal service(s) are you seeking?",
+          "type": "multiselect",
+          "required": true,
+          "options": [
+            "Immigration Issues",
+            "Civil Litigation",
+            "Criminal Matters",
+            "Labour Matters",
+            "WSIB Issues",
+            "Appeals",
+            "Translation Services",
+            "Interpretation Services",
+            "Video/Audio Analysis",
+            "Form Filling Assistance",
+            "Other"
+          ]
+        },
+        {
+          "id": "requested_services_other",
+          "label": "If 'Other', please specify",
+          "type": "text",
+          "required": false,
+          "visibleIf": { "requested_services": "Other" }
+        },
+        {
+          "id": "service_specific_details",
+          "label": "Details, deadlines, or case numbers we should be aware of",
+          "type": "textarea",
+          "required": false
+        },
+        {
+          "id": "working_with_representative",
+          "label": "Are you currently working with a lawyer or representative on this matter?",
+          "type": "radio",
+          "required": true,
+          "options": ["Yes", "No"],
+          "reveals": { "Yes": ["representative_contact"] }
+        },
+        {
+          "id": "representative_contact",
+          "label": "Representative's Contact Information",
+          "type": "textarea",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "privacy_accessibility",
+      "title": "Privacy & Accessibility",
+      "fields": [
+        {
+          "id": "privacy_consent",
+          "label": "Consent to store your data in a secure, cloud-based system that meets Canadian privacy standards",
+          "type": "checkbox",
+          "required": true
+        },
+        {
+          "id": "preferred_language_or_format",
+          "label": "Do you require communications/documents in a specific language or accessible format?",
+          "type": "textarea",
+          "required": false
+        },
+        {
+          "id": "contact_preferences",
+          "label": "Preferences or restrictions for how we contact you (email, phone, etc.)",
+          "type": "textarea",
+          "required": false
+        }
+      ]
+    }
+  ],
+  "ui": {
+    "progress": true,
+    "autosave": true,
+    "allowDraftResume": true,
+    "fileConstraints": {
+      "maxSizeMB": 25,
+      "maxFiles": 20
+    }
+  }
+}
