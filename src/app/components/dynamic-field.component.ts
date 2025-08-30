@@ -45,7 +45,7 @@ import { FileDropzoneComponent } from './file-dropzone.component';
         />
         <label 
           [for]="field.id" 
-          class="absolute left-2.5 top-2 text-gray-500 text-xs transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-sm peer-focus:top-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
+          class="floating-label absolute left-2.5 text-gray-500 text-xs transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-sm peer-focus:text-blue-500 bg-white px-1"
         >
           {{ field.label }} <span *ngIf="field.required" class="text-red-500">*</span>
         </label>
@@ -65,7 +65,7 @@ import { FileDropzoneComponent } from './file-dropzone.component';
         ></textarea>
         <label 
           [for]="field.id" 
-          class="absolute left-2.5 top-2 text-gray-500 text-xs transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-sm peer-focus:top-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
+          class="floating-label absolute left-2.5 text-gray-500 text-xs transition-all bg-white px-1"
         >
           {{ field.label }} <span *ngIf="field.required" class="text-red-500">*</span>
         </label>
@@ -85,7 +85,7 @@ import { FileDropzoneComponent } from './file-dropzone.component';
         />
         <label 
           [for]="field.id" 
-          class="absolute left-2.5 top-2 text-gray-500 text-xs transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-sm peer-focus:top-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
+          class="floating-label absolute left-2.5 text-gray-500 text-xs transition-all bg-white px-1"
         >
           {{ field.label }} <span *ngIf="field.required" class="text-red-500">*</span>
         </label>
@@ -105,7 +105,7 @@ import { FileDropzoneComponent } from './file-dropzone.component';
         />
         <label 
           [for]="field.id" 
-          class="absolute left-2.5 top-2 text-gray-500 text-xs transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-sm peer-focus:top-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
+          class="floating-label absolute left-2.5 text-gray-500 text-xs transition-all bg-white px-1"
         >
           {{ field.label }} <span *ngIf="field.required" class="text-red-500">*</span>
         </label>
@@ -127,7 +127,7 @@ import { FileDropzoneComponent } from './file-dropzone.component';
         />
         <label 
           [for]="field.id" 
-          class="absolute left-2.5 top-2 text-gray-500 text-xs transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-sm peer-focus:top-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
+          class="floating-label absolute left-2.5 text-gray-500 text-xs transition-all bg-white px-1"
         >
           {{ field.label }} <span *ngIf="field.required" class="text-red-500">*</span>
         </label>
@@ -147,7 +147,7 @@ import { FileDropzoneComponent } from './file-dropzone.component';
         />
         <label 
           [for]="field.id" 
-          class="absolute left-2.5 top-2 text-gray-500 text-xs transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-sm peer-focus:top-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
+          class="floating-label absolute left-2.5 text-gray-500 text-xs transition-all bg-white px-1"
         >
           {{ field.label }} <span *ngIf="field.required" class="text-red-500">*</span>
         </label>
@@ -167,7 +167,7 @@ import { FileDropzoneComponent } from './file-dropzone.component';
         />
         <label 
           [for]="field.id" 
-          class="absolute left-2.5 top-2 text-gray-500 text-xs transition-all peer-placeholder-shown:top-3.5 peer-placeholder-shown:text-gray-400 peer-placeholder-shown:text-sm peer-focus:top-2 peer-focus:text-xs peer-focus:text-blue-500 bg-white px-1"
+          class="floating-label absolute left-2.5 text-gray-500 text-xs transition-all bg-white px-1"
         >
           {{ field.label }} <span *ngIf="field.required" class="text-red-500">*</span>
         </label>
@@ -190,7 +190,7 @@ import { FileDropzoneComponent } from './file-dropzone.component';
         </select>
         <label 
           [for]="field.id" 
-          class="absolute left-2.5 top-2 text-gray-500 text-xs transition-all bg-white px-1"
+          class="floating-label absolute left-2.5 text-gray-500 text-xs transition-all bg-white px-1"
         >
           {{ field.label }} <span *ngIf="field.required" class="text-red-500">*</span>
         </label>
@@ -360,19 +360,40 @@ import { FileDropzoneComponent } from './file-dropzone.component';
       display: block;
     }
     
-    /* Ensure labels stay visible when field has value */
-    input:not(:placeholder-shown) + label,
-    textarea:not(:placeholder-shown) + label,
-    select:not([value=""]) + label {
-      top: 0.5rem !important;
-      font-size: 0.75rem !important;
-      color: #6b7280 !important;
+    /* Floating label positioning */
+    .floating-label {
+      top: -0.5rem;
+      z-index: 10;
     }
     
-    /* Focused state for labels */
-    input:focus + label,
-    textarea:focus + label,
-    select:focus + label {
+    /* When field is empty and not focused, position label inside */
+    input:placeholder-shown + .floating-label,
+    textarea:placeholder-shown + .floating-label {
+      top: 0.875rem;
+      font-size: 0.875rem;
+      color: #9ca3af;
+      background: transparent;
+      padding: 0;
+    }
+    
+    /* When field has value or is focused, keep label elevated */
+    input:not(:placeholder-shown) + .floating-label,
+    textarea:not(:placeholder-shown) + .floating-label,
+    input:focus + .floating-label,
+    textarea:focus + .floating-label,
+    select:not([value=""]) + .floating-label,
+    select:focus + .floating-label {
+      top: -0.5rem !important;
+      font-size: 0.75rem !important;
+      background: white !important;
+      padding: 0 0.25rem !important;
+      z-index: 10 !important;
+    }
+    
+    /* Focus state color */
+    input:focus + .floating-label,
+    textarea:focus + .floating-label,
+    select:focus + .floating-label {
       color: #3b82f6 !important;
     }
     
