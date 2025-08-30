@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatStepperModule, MatStepper } from '@angular/material/stepper';
 import { MatButtonModule } from '@angular/material/button';
@@ -82,7 +82,7 @@ import { AutosaveIndicatorComponent } from './autosave-indicator.component';
         [selectedIndex]="selectedIndex"
         (selectionChange)="onStepChange($event)"
         orientation="vertical"
-        [linear]="false"
+        [linear]="true"
         class="intake-stepper"
         *ngIf="schema"
       >
@@ -91,7 +91,8 @@ import { AutosaveIndicatorComponent } from './autosave-indicator.component';
           *ngFor="let section of schema.sections; let i = index"
           [stepControl]="sectionForms[section.id]"
           [label]="section.title"
-          [editable]="true"
+          [editable]="false"
+          [completed]="isSectionComplete(section.id)"
         >
           <ng-template matStepLabel>
             <div class="flex items-center space-x-2">
@@ -360,7 +361,34 @@ export class IntakeStepperComponent implements OnInit, OnDestroy {
       
       section.fields.forEach(field => {
         const currentValue = this.intakeState.getValue(section.id, field.id);
-        formGroup.addControl(field.id, this.formBuilder.control(currentValue));
+        const validators = [];
+        
+        // Add required validator for required fields
+        if (field.required) {
+          validators.push(Validators.required);
+        }
+        
+        // Add pattern validator if pattern is specified
+        if (field.pattern) {
+          validators.push(Validators.pattern(field.pattern));
+        }
+        
+        // Add email validator for email fields
+        if (field.type === 'email') {
+          validators.push(Validators.email);
+        }
+        
+        // Add min/max validators for number fields
+        if (field.type === 'number') {
+          if (field.min !== undefined) {
+            validators.push(Validators.min(field.min));
+          }
+          if (field.max !== undefined) {
+            validators.push(Validators.max(field.max));
+          }
+        }
+        
+        formGroup.addControl(field.id, this.formBuilder.control(currentValue, validators));
       });
 
       this.sectionForms[section.id] = formGroup;
@@ -484,6 +512,10 @@ export class IntakeStepperComponent implements OnInit, OnDestroy {
       .map(field => field.id);
 
     return this.intakeState.calculateSectionCompletion(sectionId, requiredFields);
+  }
+
+  isSectionComplete(sectionId: string): boolean {
+    return this.getSectionCompletion(sectionId) === 100;
   }
 
   resumeDraft(): void {
