@@ -7,7 +7,9 @@
       "id": "personal_details",
       "title": "Personal Details",
       "fields": [
-        { "id": "full_name", "label": "Full Name (as it should appear in our records)", "type": "text", "required": true },
+        { "id": "first_name", "label": "First Name", "type": "text", "required": true },
+        { "id": "middle_name", "label": "Middle Name", "type": "text", "required": false },
+        { "id": "last_name", "label": "Last Name", "type": "text", "required": true },
         { "id": "address", "label": "Current Address", "type": "textarea", "required": true },
         { "id": "phone", "label": "Preferred Phone Number", "type": "tel", "required": true, "pattern": "^\\+?[0-9\\-()\\s]{7,}$" },
         { "id": "email", "label": "Email Address", "type": "email", "required": true, "pattern": "^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$" },
