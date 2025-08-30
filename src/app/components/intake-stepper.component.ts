@@ -124,6 +124,14 @@ import { AutosaveIndicatorComponent } from './autosave-indicator.component';
               </form>
             </mat-card-content>
 
+            <!-- Section Validation Error -->
+            <div *ngIf="sectionValidationError" class="mx-6 mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+              <div class="flex items-start">
+                <mat-icon class="text-red-500 text-sm mt-0.5 mr-2">error</mat-icon>
+                <p class="text-red-700 text-sm">{{ sectionValidationError }}</p>
+              </div>
+            </div>
+
             <mat-card-actions class="flex justify-between mt-6">
               <button 
                 mat-button 
@@ -301,6 +309,7 @@ export class IntakeStepperComponent implements OnInit, OnDestroy {
   hasDraft = false;
   draftResumed = false;
   errorMessage = '';
+  sectionValidationError = '';
 
   completion$: Observable<number>;
 
@@ -384,6 +393,11 @@ export class IntakeStepperComponent implements OnInit, OnDestroy {
   onFieldChange(sectionId: string, fieldId: string, value: any): void {
     this.intakeState.patchValue(sectionId, fieldId, value);
     
+    // Clear validation error when user starts typing
+    if (this.sectionValidationError) {
+      this.sectionValidationError = '';
+    }
+    
     // Update form control
     const form = this.sectionForms[sectionId];
     if (form && form.get(fieldId)) {
@@ -419,9 +433,14 @@ export class IntakeStepperComponent implements OnInit, OnDestroy {
 
   onStepChange(event: any): void {
     this.selectedIndex = event.selectedIndex;
+    // Clear validation error when switching sections
+    this.sectionValidationError = '';
   }
 
   validateAndContinue(sectionId: string): void {
+    // Clear any previous validation errors
+    this.sectionValidationError = '';
+    
     if (this.validateSection(sectionId)) {
       this.stepper.next();
     }
@@ -445,7 +464,8 @@ export class IntakeStepperComponent implements OnInit, OnDestroy {
         form.markAllAsTouched();
       }
       
-      // You could show a toast/snackbar here with validation errors
+      // Set professional validation error message
+      this.sectionValidationError = 'Please complete all required fields in this section before proceeding.';
       console.warn('Validation errors:', result.errors);
       return false;
     }
