@@ -43,7 +43,12 @@ import { PhoneInputComponent } from './phone-input.component';
           [id]="field.id"
           [formControl]="control"
           class="peer block w-full border border-gray-300 rounded-md px-2.5 pt-4 pb-2.5 text-sm placeholder-transparent focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none transition-all"
-          [placeholder]="field.label"
+          [class.uppercase]="field.id === 'postal_code'"
+          [placeholder]="field.placeholder || field.label"
+          [attr.title]="field.placeholder ? field.placeholder : ''"
+          [attr.maxlength]="field.maxlength"
+          (input)="onTextInput($event)"
+          (paste)="onTextPaste($event)"
         />
         <label 
           [for]="field.id" 
@@ -51,6 +56,9 @@ import { PhoneInputComponent } from './phone-input.component';
         >
           {{ field.label }} <span *ngIf="field.required" class="text-red-500">*</span>
         </label>
+        <div *ngIf="field.placeholder && field.placeholder !== field.label" class="text-xs text-gray-500 mt-1">
+          Format: {{ field.placeholder }}
+        </div>
         <div *ngIf="control.errors" class="text-sm text-red-600 mt-1">
           {{ getErrorMessage() }}
         </div>
@@ -421,6 +429,13 @@ import { PhoneInputComponent } from './phone-input.component';
       height: 1rem;
       flex-shrink: 0;
     }
+    
+    /* Postal code formatting */
+    .uppercase {
+      text-transform: uppercase;
+      font-family: monospace;
+      letter-spacing: 0.05em;
+    }
   `]
 })
 export class DynamicFieldComponent implements OnInit, OnDestroy, ControlValueAccessor {
@@ -575,6 +590,73 @@ export class DynamicFieldComponent implements OnInit, OnDestroy, ControlValueAcc
     return `${this.getRepeaterItemName()} ${index + 1}`;
   }
 
+  // Input formatting
+  onTextInput(event: any): void {
+    if (this.field.id === 'postal_code') {
+      const input = event.target;
+      const rawValue = input.value;
+      const formattedValue = this.formatPostalCodeValue(rawValue);
+      
+      if (rawValue !== formattedValue) {
+        input.value = formattedValue;
+        this.control.setValue(formattedValue, { emitEvent: false });
+        this.onChange(formattedValue);
+        this.valueChange.emit(formattedValue);
+      }
+    }
+  }
+
+  onTextPaste(event: ClipboardEvent): void {
+    if (this.field.id === 'postal_code') {
+      event.preventDefault();
+      const paste = event.clipboardData?.getData('text') || '';
+      const formattedValue = this.formatPostalCodeValue(paste);
+      
+      const input = event.target as HTMLInputElement;
+      input.value = formattedValue;
+      this.control.setValue(formattedValue, { emitEvent: false });
+      this.onChange(formattedValue);
+      this.valueChange.emit(formattedValue);
+    }
+  }
+
+  private formatPostalCodeValue(value: string): string {
+    // Remove all non-alphanumeric characters and convert to uppercase
+    let clean = value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+    
+    // Filter to build valid Canadian postal code pattern: L#L #L# (Letter-Number-Letter Space Number-Letter-Number)
+    let result = '';
+    let position = 0;
+    
+    for (let i = 0; i < clean.length && position < 6; i++) {
+      const char = clean[i];
+      let isValid = false;
+      
+      // Check if character is valid for current position
+      // Canadian postal code pattern: L#L #L#
+      if (position === 0 || position === 2 || position === 4) {
+        // Should be a letter (positions 0, 2, 4)
+        isValid = /[A-Z]/.test(char);
+      } else if (position === 1 || position === 3 || position === 5) {
+        // Should be a number (positions 1, 3, 5)
+        isValid = /[0-9]/.test(char);
+      }
+      
+      if (isValid) {
+        result += char;
+        position++;
+        
+        // Add space after 3rd character if we have more characters
+        if (position === 3 && clean.length > i + 1) {
+          result += ' ';
+        }
+      }
+      // If not valid, skip this character and continue
+    }
+    
+    return result;
+  }
+
   getErrorMessage(): string {
     if (this.control.errors) {
       if (this.control.errors['required']) {
@@ -584,6 +666,9 @@ export class DynamicFieldComponent implements OnInit, OnDestroy, ControlValueAcc
         return 'Please enter a valid email address';
       }
       if (this.control.errors['pattern']) {
+        if (this.field.id === 'postal_code') {
+          return 'Please enter a valid Canadian postal code (e.g., A1B 2C3)';
+        }
         return 'Please enter a valid format';
       }
       if (this.control.errors['min']) {

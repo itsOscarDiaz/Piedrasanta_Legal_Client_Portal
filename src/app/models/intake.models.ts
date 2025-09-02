@@ -18,6 +18,8 @@ export interface IntakeField {
   type: FieldType;
   required: boolean;
   pattern?: string;
+  placeholder?: string;
+  maxlength?: number;
   options?: string[];
   reveals?: Record<string, string[]>;
   visibleIf?: Record<string, any>;
