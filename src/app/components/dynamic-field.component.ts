@@ -9,6 +9,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { Subscription } from 'rxjs';
 import { IntakeField } from '../models/intake.models';
 import { FileDropzoneComponent } from './file-dropzone.component';
+import { PhoneInputComponent } from './phone-input.component';
 
 @Component({
   selector: 'app-dynamic-field',
@@ -22,7 +23,8 @@ import { FileDropzoneComponent } from './file-dropzone.component';
     MatExpansionModule,
     MatCheckboxModule,
     MatRadioModule,
-    FileDropzoneComponent
+    FileDropzoneComponent,
+    PhoneInputComponent
   ],
   providers: [
     {
@@ -96,22 +98,12 @@ import { FileDropzoneComponent } from './file-dropzone.component';
 
       <!-- Phone Input -->
       <div *ngIf="field.type === 'tel'" class="relative">
-        <input 
-          type="tel" 
-          [id]="field.id"
+        <app-phone-input
           [formControl]="control"
-          class="peer block w-full border border-gray-300 rounded-md px-2.5 pt-4 pb-2.5 text-sm placeholder-transparent focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none transition-all"
-          [placeholder]="field.label"
-        />
-        <label 
-          [for]="field.id" 
-          class="floating-label absolute left-2.5 text-gray-500 text-xs transition-all bg-white px-1"
-        >
-          {{ field.label }} <span *ngIf="field.required" class="text-red-500">*</span>
-        </label>
-        <div *ngIf="control.errors" class="text-sm text-red-600 mt-1">
-          {{ getErrorMessage() }}
-        </div>
+          [label]="field.label"
+          [required]="field.required"
+          [fieldId]="field.id"
+        ></app-phone-input>
       </div>
 
       <!-- Number Input -->
